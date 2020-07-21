@@ -22,49 +22,32 @@ exports.create = (text, callback) => {
 
 
 exports.readAll = (callback) => {
-  //var data = _.map()
-  var allFiles = [];
-  // console.log(exports.dataDir, "exportste");
 
   fs.readdir(exports.dataDir, (err, files) => {
-
     if (err) {
       throw ('error retrieving all items');
+    } else {
+      callback(null,
+        _.map(files, (file) => {
+          var id = path.basename(file, '.txt');
+          return ({id: id, text: id});
+        })
+      )
+      console.log("All files read succesfully");
     }
+  });
+};
 
-    //return
-     callback(null, _.map(files, (file) => {
-      var id = path.basename(file, '.txt');
-      return ({id: id, text: id});
-      // returns the sections of the path name after the last '/' and '.txt'
-      // _.map([1, 2, 3], function(num){ return num * 3; });
-      // => [3, 6, 9]
-    }));
-
-        console.log("All files read succesfully");
-      })
-    }
-
-/* function readDir(exports.dataDir,
-     function(err, file) {
-      var filesnames = _.map(files, function callback(err, file))
-      var id = path.basement(file, '.txt)
-
-
-
-
-
-}))
-
-*/
 
 exports.readOne = (id, callback) => {
-  var text = items[id];
-  if (!text) {
-    callback(new Error(`No item with id: ${id}`));
-  } else {
-    callback(null, { id, text });
-  }
+  var filePath = exports.dataDir + '/' + id + '.txt'
+  fs.readFile(filePath, 'utf8', (err, data) => {
+    if (err) {
+      callback(err, null);
+    } else {
+      callback(null, {id: id, text: data})
+    }
+  })
 };
 
 exports.update = (id, text, callback) => {
