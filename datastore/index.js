@@ -10,25 +10,53 @@ var items = {};
 exports.create = (text, callback) => {
   counter.getNextUniqueId( (err, id) => {
     // var fileName =
-    console.log(exports.dataDir);
     fs.writeFile((exports.dataDir + '/' + id + '.txt'), text, (err) => {
-    if (err) {
-      throw ('error saving Todo to disk');
-    } else {
-      callback(null, {id, text});
-      console.log("File written successfully");
-    }
-  })
+      if (err) {
+        throw ('error saving Todo to disk');
+      } else {
+        callback(null, {id, text})
+      }
+    })
   })
 };
 
 
 exports.readAll = (callback) => {
-  var data = _.map(items, (text, id) => {
-    return { id, text };
-  });
-  callback(null, data);
-};
+  //var data = _.map()
+  var allFiles = [];
+  // console.log(exports.dataDir, "exportste");
+
+  fs.readdir(exports.dataDir, (err, files) => {
+
+    if (err) {
+      throw ('error retrieving all items');
+    }
+
+    return _.map(files, (file) => {
+      var id = path.basename(file, '.txt');
+      console.log({id: id, text: id});
+      return ({id: id, text: id});
+      // returns the sections of the path name after the last '/' and '.txt'
+      // _.map([1, 2, 3], function(num){ return num * 3; });
+      // => [3, 6, 9]
+    })
+
+        console.log("All files read succesfully");
+      })
+    }
+
+/* function readDir(exports.dataDir,
+     function(err, file) {
+      var filesnames = _.map(files, function callback(err, file))
+      var id = path.basement(file, '.txt)
+
+
+
+
+
+}))
+
+*/
 
 exports.readOne = (id, callback) => {
   var text = items[id];
