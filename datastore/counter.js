@@ -40,11 +40,10 @@ const writeCounter = (count, callback) => {
 
 exports.getNextUniqueId = (callback) => {
   readCounter((err, currentValue) => {
-    writeCounter(currentValue + 1, (err, uniqueId) => {
-      callback(err, uniqueId);
+    writeCounter(currentValue + 1, (err, id) => {
+      callback(err, id);
     });
-  }
-  );
+  });
 }
 
     //if no number
@@ -66,11 +65,6 @@ exports.getNextUniqueId = (callback) => {
 
 //   counter = counter + 1;
 //   return zeroPaddedNumber(counter);
-
-//   // write next counter
-// };
-
-
 
 // Configuration -- DO NOT MODIFY //////////////////////////////////////////////
 
