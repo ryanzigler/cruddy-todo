@@ -117,14 +117,14 @@ describe('todos', () => {
 
     // Refactor this test when completing `readAll`
     it('should return an array with all saved todos', (done) => {
-      const todo1text = 'todo 1';
-      const todo2text = 'todo 2';
-      const expectedTodoList = [{ id: '00001', text: '00001' }, { id: '00002', text: '00002' }];
+      const todo1text = 'Be awesome!';
+      const todo2text = 'Don\'t be not awesome!';
+      const expectedTodoList = [{ id: '00001', text: 'Be awesome!' }, { id: '00002', text: 'Don\'t be not awesome!' }];
       todos.create(todo1text, (err, todo) => {
         todos.create(todo2text, (err, todo) => {
           todos.readAll((err, todoList) => {
             expect(todoList).to.have.lengthOf(2);
-            expect(todoList).to.deep.include.members(expectedTodoList, 'NOTE: Text field should use the Id initially');
+            expect(todoList).to.deep.include.members(expectedTodoList, 'NOTE: Text field should contain the saved Todo');
             done();
           });
         });

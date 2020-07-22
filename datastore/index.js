@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const _ = require('underscore');
 const counter = require('./counter');
+const Promise = require('bluebird');
 
 var items = {};
 
@@ -11,7 +12,7 @@ exports.create = (text, callback) => {
   counter.getNextUniqueId( (err, id) => {
     fs.writeFile((exports.dataDir + '/' + id + '.txt'), text, (err) => {
       if (err) {
-        throw ('error saving Todo to disk');
+        callback(('error saving Todo to disk'));
       } else {
         callback(null, {id, text});
       }
@@ -19,25 +20,33 @@ exports.create = (text, callback) => {
   });
 };
 
+Promise.promisify(fs.readFile);
+const readFileAsync = (id) => {
+  return new Promise((resolve, reject) => {
+    fs.readFile(`${exports.dataDir}/${id}.txt`, {encoding: 'utf8'}, (err, text) => {
+      if (err) {
+        reject(new Error('error'));
+      } else {
+        resolve({id, text});
+      }
+    });
+  });
+}
 
 exports.readAll = (callback) => {
   fs.readdir(exports.dataDir, (err, files) => {
-    if (err) {
-      throw ('error retrieving all items');
-    } else {
-      callback(null,
-        _.map(files, (file) => {
-          var id = path.basename(file, '.txt');
-          return ({id: id, text: id});
-        });
-      )
-    }
+    var todos = _.map(files, (file) => {
+      var id = path.basename(file, '.txt');
+        return readFileAsync(id);
+    })
+    Promise.all(todos).then((results) => {
+      callback(null, results);
+    });
   });
 };
 
-
 exports.readOne = (id, callback) => {
-  var filePath = exports.dataDir + '/' + id + '.txt'
+  var filePath = exports.dataDir + '/' + id + '.txt';
   fs.readFile(filePath, 'utf8', (err, data) => {
     if (err) {
       callback(new Error(`No item at ID: ${id}`));
@@ -48,7 +57,7 @@ exports.readOne = (id, callback) => {
 };
 
 exports.update = (id, text, callback) => {
-  var filePath = exports.dataDir + '/' + id + '.txt'
+  var filePath = exports.dataDir + '/' + id + '.txt';
   fs.readFile(filePath, 'utf8', (err, data) => {
     if (err) {
       callback(new Error(`No item at ID: ${id}`));
