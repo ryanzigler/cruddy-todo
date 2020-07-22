@@ -31,14 +31,14 @@ const readFileAsync = (id) => {
       }
     });
   });
-}
+};
 
 exports.readAll = (callback) => {
   fs.readdir(exports.dataDir, (err, files) => {
     var todos = _.map(files, (file) => {
       var id = path.basename(file, '.txt');
-        return readFileAsync(id);
-    })
+      return readFileAsync(id);
+    });
     Promise.all(todos).then((results) => {
       callback(null, results);
     });
